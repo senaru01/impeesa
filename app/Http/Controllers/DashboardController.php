@@ -76,23 +76,23 @@ class DashboardController extends Controller
      */
     private function climbMap(Collection $done): array
     {
-        $locations = $this->mountainLocations();
         $points = [];
         $unmapped = [];
 
         foreach ($done->sortByDesc('started_on') as $climb) {
-            $key = $this->resolveMountain($climb->mountain_name, $locations);
+            $location = $climb->mountainLocation();
 
-            if ($key === null) {
+            if ($location === null) {
                 $unmapped[] = $climb->mountain_name;
 
                 continue;
             }
 
+            $key = $location['key'];
             $points[$key] ??= [
                 'name' => $climb->mountain_name,
-                'lat' => $locations[$key]['lat'],
-                'lng' => $locations[$key]['lng'],
+                'lat' => $location['lat'],
+                'lng' => $location['lng'],
                 'summit' => false,
                 'climbs' => [],
                 'photos' => [],
@@ -122,56 +122,6 @@ class DashboardController extends Controller
             'mapPoints' => array_values($points),
             'unmappedClimbs' => array_values(array_unique($unmapped)),
         ];
-    }
-
-    /**
-     * Indeks koordinat gunung dari destinasi (titik puncak) lalu bank data jalur.
-     *
-     * @return array<string, array{lat: float, lng: float}>
-     */
-    private function mountainLocations(): array
-    {
-        $locations = [];
-
-        foreach ([...config('mountains.destinations'), ...config('mountains.others')] as $mountain) {
-            [$lat, $lng] = $mountain['coordinates'];
-
-            foreach (array_filter([$mountain['name'], $mountain['slug'] ?? null]) as $alias) {
-                $locations[$this->normalizeMountain($alias)] ??= ['lat' => $lat, 'lng' => $lng];
-            }
-        }
-
-        foreach (config('trails.trails') as $trail) {
-            $locations[$this->normalizeMountain($trail['name'])] ??= ['lat' => $trail['lat'], 'lng' => $trail['lng']];
-        }
-
-        return $locations;
-    }
-
-    /**
-     * Cocokkan nama bebas ("Gn. Rinjani via Sembalun") ke kunci indeks; pilih kecocokan terpanjang.
-     *
-     * @param  array<string, array{lat: float, lng: float}>  $locations
-     */
-    private function resolveMountain(string $name, array $locations): ?string
-    {
-        $needle = $this->normalizeMountain($name);
-
-        if ($needle === '' || isset($locations[$needle])) {
-            return $needle === '' ? null : $needle;
-        }
-
-        return collect(array_keys($locations))
-            ->filter(fn (string $key) => strlen($key) >= 4 && (str_contains($needle, $key) || (strlen($needle) >= 4 && str_contains($key, $needle))))
-            ->sortByDesc(fn (string $key) => strlen($key))
-            ->first();
-    }
-
-    private function normalizeMountain(string $name): string
-    {
-        $name = preg_replace('/\b(gunung|gn|kawah|puncak|pegunungan|peg|mount|mt)\b\.?/', '', strtolower($name));
-
-        return preg_replace('/[^a-z0-9]/', '', $name);
     }
 
     /**

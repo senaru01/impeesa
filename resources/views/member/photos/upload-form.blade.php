@@ -13,7 +13,13 @@
     </div>
     <div class="m-field">
         <label for="caption">Keterangan</label>
-        <input id="caption" name="caption" class="m-input" value="{{ old('caption') }}" placeholder="mis. Sunrise di Plawangan Sembalun">
+        <input id="caption" name="caption" class="m-input" value="{{ old('caption_photo') ? '' : old('caption') }}" placeholder="mis. Sunrise di Plawangan Sembalun">
+    </div>
+    <div class="m-field">
+        <label for="mountain_name">Gunung / lokasi</label>
+        <input id="mountain_name" name="mountain_name" class="m-input" list="upload-mountain-options" value="{{ old('location_photo') ? '' : old('mountain_name') }}" placeholder="mis. Gunung Rinjani" autocomplete="off">
+        @include('member.photos.mountain-options', ['id' => 'upload-mountain-options'])
+        <span class="m-field__hint">Opsional. Foto akan tampil di titik gunung ini pada peta Galeri Bersama.</span>
     </div>
     <div class="m-field">
         <label for="taken_on">Tanggal foto</label>

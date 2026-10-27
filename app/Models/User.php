@@ -179,4 +179,53 @@ class User extends Authenticatable
     {
         return $this->hasMany(Story::class);
     }
+
+    /**
+     * @return HasMany<WeightLog, $this>
+     */
+    public function weightLogs(): HasMany
+    {
+        return $this->hasMany(WeightLog::class);
+    }
+
+    /**
+     * @return HasMany<Run, $this>
+     */
+    public function runs(): HasMany
+    {
+        return $this->hasMany(Run::class);
+    }
+
+    /**
+     * Ringkasan berat badan dan lari untuk halaman kesehatan dan detail anggota.
+     * IMT memakai tinggi badan terakhir yang pernah dicatat.
+     *
+     * @return array{latestWeight: ?WeightLog, weightChange: ?float, totalChange: ?float, heightCm: ?int, bmi: ?float, bmiCategory: ?string, monthRuns: int, monthDistance: float, totalDistance: float, longestRun: ?Run, bestPace: ?string}
+     */
+    public function healthSummary(): array
+    {
+        $weights = $this->weightLogs()->orderBy('recorded_on')->orderBy('id')->get();
+        $runs = $this->runs()->get();
+        $monthRuns = $runs->filter(fn (Run $run) => $run->run_on->isCurrentMonth());
+
+        $latest = $weights->last();
+        $previous = $weights->count() > 1 ? $weights->get($weights->count() - 2) : null;
+        $heightCm = $weights->whereNotNull('height_cm')->last()?->height_cm;
+        $bmi = $latest?->bmi($heightCm);
+        $fastest = $runs->filter(fn (Run $run) => $run->distance_km >= 1)->sortBy(fn (Run $run) => $run->paceSeconds())->first();
+
+        return [
+            'latestWeight' => $latest,
+            'weightChange' => $previous ? round($latest->weight_kg - $previous->weight_kg, 1) : null,
+            'totalChange' => $previous ? round($latest->weight_kg - $weights->first()->weight_kg, 1) : null,
+            'heightCm' => $heightCm,
+            'bmi' => $bmi,
+            'bmiCategory' => $bmi ? WeightLog::bmiCategory($bmi) : null,
+            'monthRuns' => $monthRuns->count(),
+            'monthDistance' => round($monthRuns->sum('distance_km'), 2),
+            'totalDistance' => round($runs->sum('distance_km'), 2),
+            'longestRun' => $runs->sortByDesc('distance_km')->first(),
+            'bestPace' => $fastest?->formattedPace(),
+        ];
+    }
 }

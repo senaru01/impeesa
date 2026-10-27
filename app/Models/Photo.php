@@ -16,7 +16,7 @@ use Illuminate\Http\UploadedFile;
  * (shared_at terisi) juga tampil di Galeri Bersama setelah disetujui (approved_at).
  * Foto yang diunggah langsung ke Galeri Bersama tidak punya pemilik.
  */
-#[Fillable(['path', 'caption', 'taken_on'])]
+#[Fillable(['path', 'caption', 'taken_on', 'mountain_name'])]
 class Photo extends Model
 {
     /** @use HasFactory<PhotoFactory> */
@@ -95,6 +95,27 @@ class Photo extends Model
     public function wasUploadedByOther(): bool
     {
         return $this->user_id !== null && $this->uploaded_by !== null && $this->uploaded_by !== $this->user_id;
+    }
+
+    /**
+     * Nama lokasi foto: gunung pendakiannya, atau lokasi yang diisi manual bila tanpa pendakian.
+     * Butuh relasi climb dimuat agar tidak memicu query per foto.
+     */
+    public function locationName(): ?string
+    {
+        return $this->climb?->mountain_name ?? $this->mountain_name;
+    }
+
+    /**
+     * Titik peta foto; null bila lokasinya kosong atau nama gunungnya tidak dikenali.
+     *
+     * @return array{key: string, lat: float, lng: float}|null
+     */
+    public function mountainLocation(): ?array
+    {
+        return $this->climb !== null
+            ? $this->climb->mountainLocation()
+            : Climb::locateMountain($this->mountain_name);
     }
 
     /**

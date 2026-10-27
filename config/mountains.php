@@ -280,6 +280,15 @@ return [
             'elevation' => '1.291 mdpl',
             'coordinates' => [-6.5908, 107.2206],
         ],
+        [
+            // Desa Sukaharja, Kec. Sukamakmur. Slug jadi alias "Gunung Batu Jonggol" agar
+            // tidak tertukar dengan Batur/Batukaru di Bali. Koordinat masih perkiraan.
+            'name' => 'Gunung Batu',
+            'slug' => 'batu-jonggol',
+            'region' => 'Jonggol, Bogor, Jawa Barat',
+            'elevation' => '875 mdpl',
+            'coordinates' => [-6.552, 107.057],
+        ],
     ],
 
     // Slug gunung yang tampil di section "Rekomendasi Pendakian", sesuai urutan peringkat.

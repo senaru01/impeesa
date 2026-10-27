@@ -44,6 +44,7 @@
                 <a href="{{ route('photos.shared') }}" @class(['is-active' => request()->routeIs('photos.shared')])>Galeri Bersama</a>
                 <a href="{{ route('stories.index') }}" @class(['is-active' => request()->routeIs('stories.*') && ! request()->routeIs('stories.shared')])>Cerita Saya</a>
                 <a href="{{ route('stories.shared') }}" @class(['is-active' => request()->routeIs('stories.shared')])>Cerita Bersama</a>
+                <a href="{{ route('health.index') }}" @class(['is-active' => request()->routeIs('health.*')])>Kesehatan</a>
                 <a href="{{ route('profile.edit') }}" @class(['is-active' => request()->routeIs('profile.*')])>Data Diri</a>
                 <a href="{{ route('emergency.card') }}" @class(['is-active' => request()->routeIs('emergency.card')])>Kartu Darurat</a>
                 @can('admin')

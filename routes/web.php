@@ -14,17 +14,22 @@ use App\Http\Controllers\ClimbInvitationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\EmergencyController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MemberProfileController;
 use App\Http\Controllers\MemberProfilePhotoController;
 use App\Http\Controllers\PetaGunungController;
+use App\Http\Controllers\PhotoCaptionController;
 use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\PhotoLocationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicStoryController;
+use App\Http\Controllers\RunController;
 use App\Http\Controllers\SharedPhotoController;
 use App\Http\Controllers\SharedPhotoRequestController;
 use App\Http\Controllers\SharedStoryController;
 use App\Http\Controllers\StoryController;
+use App\Http\Controllers\WeightLogController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', LandingController::class)->name('landing');
@@ -76,6 +81,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/galeri/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');
     Route::post('/galeri/{photo}/bagikan', [SharedPhotoRequestController::class, 'store'])->name('photos.share');
     Route::delete('/galeri/{photo}/bagikan', [SharedPhotoRequestController::class, 'destroy'])->name('photos.unshare');
+    Route::put('/galeri/{photo}/lokasi', [PhotoLocationController::class, 'update'])->name('photos.location');
+    Route::put('/galeri/{photo}/keterangan', [PhotoCaptionController::class, 'update'])->name('photos.caption');
+
+    Route::get('/kesehatan', HealthController::class)->name('health.index');
+    Route::post('/kesehatan/berat-badan', [WeightLogController::class, 'store'])->name('weights.store');
+    Route::delete('/kesehatan/berat-badan/{weightLog}', [WeightLogController::class, 'destroy'])->name('weights.destroy');
+    Route::post('/kesehatan/lari', [RunController::class, 'store'])->name('runs.store');
+    Route::delete('/kesehatan/lari/{run}', [RunController::class, 'destroy'])->name('runs.destroy');
 
     Route::get('/cerita-bersama', [SharedStoryController::class, 'index'])->name('stories.shared');
 

@@ -54,8 +54,11 @@ class MemberController extends Controller
         return view('admin.members.show', [
             'member' => $member,
             'climbs' => $member->climbs()->latest('started_on')->get(),
-            'photos' => $member->photos()->with('uploader')->latest()->get(),
+            'photos' => $member->photos()->with(['uploader', 'climb'])->latest()->get(),
             'stories' => $member->stories()->latest()->get(),
+            'health' => $member->healthSummary(),
+            'weights' => $member->weightLogs()->latest('recorded_on')->latest('id')->take(5)->get(),
+            'runs' => $member->runs()->latest('run_on')->latest('id')->take(5)->get(),
         ]);
     }
 

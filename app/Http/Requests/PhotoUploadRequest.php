@@ -35,6 +35,7 @@ class PhotoUploadRequest extends FormRequest
             'photos.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
             'caption' => ['nullable', 'string', 'max:150'],
             'taken_on' => ['nullable', 'date'],
+            'mountain_name' => PhotoLocationRequest::mountainRules(),
         ];
     }
 
@@ -50,6 +51,7 @@ class PhotoUploadRequest extends FormRequest
                 Photo::storeUpload($file, $this->user(), $owner, attributes: [
                     'caption' => $this->validated('caption'),
                     'taken_on' => $this->validated('taken_on'),
+                    'mountain_name' => $this->validated('mountain_name'),
                 ]);
             }
         });

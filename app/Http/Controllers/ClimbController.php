@@ -32,7 +32,7 @@ class ClimbController extends Controller
                 ->get(),
             'invitations' => $this->pendingInvitations($user),
             'statuses' => ClimbStatus::cases(),
-            'mountains' => $this->mountainOptions(),
+            'mountains' => Climb::mountainOptions(),
             'members' => $this->memberOptions($user),
         ]);
     }
@@ -55,7 +55,7 @@ class ClimbController extends Controller
         return view('member.climbs.edit', [
             'climb' => $climb->load(['photos', 'coverPhoto', 'participants.user', 'joinedFrom.climb.user']),
             'statuses' => ClimbStatus::cases(),
-            'mountains' => $this->mountainOptions(),
+            'mountains' => Climb::mountainOptions(),
             'members' => $this->memberOptions($request->user()),
         ]);
     }
@@ -173,19 +173,5 @@ class ClimbController extends Controller
         }
 
         return $parts ? $message.'; '.implode(', ', $parts).'.' : "{$message}.";
-    }
-
-    /**
-     * Saran nama gunung beserta ketinggiannya untuk isian formulir.
-     *
-     * @return array<string, int>
-     */
-    private function mountainOptions(): array
-    {
-        return collect(config('mountains.destinations'))
-            ->concat(config('mountains.others'))
-            ->sortBy('name')
-            ->mapWithKeys(fn (array $mountain) => [$mountain['name'] => (int) preg_replace('/\D/', '', $mountain['elevation'])])
-            ->all();
     }
 }

@@ -16,7 +16,7 @@ class PhotoController extends Controller
     public function index(Request $request): View
     {
         return view('member.photos.index', [
-            'photos' => $request->user()->photos()->with('uploader')->latest()->get(),
+            'photos' => $request->user()->photos()->with(['uploader', 'climb'])->latest()->get(),
         ]);
     }
 

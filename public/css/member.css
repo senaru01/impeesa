@@ -82,6 +82,7 @@ h1, h2, h3, p { margin: 0; }
 
 /* ---------------- Cards & grid ---------------- */
 .m-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.m-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .m-col-2 { grid-column: span 2; }
 .m-row-2 { grid-row: span 2; }
 .m-card { position: relative; padding: 24px; border-radius: var(--m-radius); background: var(--m-surface); box-shadow: var(--m-shadow); min-width: 0; }
@@ -262,13 +263,13 @@ textarea.m-input { resize: vertical; min-height: 110px; line-height: 1.6; }
 
 /* ---------------- Responsive ---------------- */
 @media (max-width: 1200px) {
-    .m-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .m-grid, .m-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .m-layout { grid-template-columns: 1fr; }
     .m-sticky { position: static; }
 }
 
 @media (max-width: 760px) {
-    .m-grid { grid-template-columns: 1fr; }
+    .m-grid, .m-grid--3 { grid-template-columns: 1fr; }
     .m-col-2, .m-row-2 { grid-column: auto; grid-row: auto; }
     .m-pills { flex-wrap: wrap; }
     .m-bigstats { gap: 22px; }
@@ -441,3 +442,103 @@ body.ed { background: #fef2f2; font-family: system-ui, -apple-system, 'Segoe UI'
 .m-invites { border: 2px solid #fed7aa; }
 .m-invite { flex-wrap: wrap; }
 .m-invite__body { flex: 1; min-width: 220px; }
+
+/* ---------- Kesehatan: berat badan & lari ---------- */
+.m-health__label { font-size: 13px; color: var(--m-muted); }
+.m-health__value { margin: 10px 0 12px; font-size: 40px; font-weight: 500; line-height: 1; letter-spacing: -.02em; }
+.m-health__value span { margin-left: 4px; font-size: 14px; font-weight: 400; color: var(--m-muted); letter-spacing: 0; }
+.m-health__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: var(--m-muted); }
+.m-linechart { margin: 0; }
+.m-linechart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.m-linechart__grid { stroke: var(--m-line); stroke-width: 1; }
+.m-linechart__line { fill: none; stroke: var(--m-navy); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.m-linechart__dot { fill: var(--m-surface); stroke: var(--m-blue); stroke-width: 2; }
+.m-linechart__axis { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; font-size: 12px; color: var(--m-muted); }
+
+/* ---------------- Galeri Bersama: jelajah (slideshow + peta jejak) ---------------- */
+.m-explore { margin-bottom: 20px; }
+.m-explore__head { flex-wrap: wrap; gap: 12px; }
+.m-explore__filters { display: flex; flex-wrap: wrap; gap: 10px; }
+.m-explore__filter { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--m-muted); }
+.m-explore__filter .m-input { width: auto; max-width: 220px; padding: 8px 12px; font-size: 13px; }
+.m-explore__frame { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 14px; }
+.m-explore__stage { position: relative; aspect-ratio: 4 / 3; min-height: 320px; border-radius: 16px; overflow: hidden; background: #0f172a; outline: 0; touch-action: pan-y; }
+.m-explore__stage:focus-visible { box-shadow: 0 0 0 3px var(--m-sky); }
+.m-explore__slide { position: absolute; inset: 0; opacity: 0; transition: opacity .7s ease; }
+.m-explore__slide.is-active { opacity: 1; z-index: 1; }
+.m-explore__bg { position: absolute; inset: -30px; width: calc(100% + 60px); height: calc(100% + 60px); object-fit: cover; filter: blur(26px) brightness(.6) saturate(1.2); }
+.m-explore__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; cursor: zoom-in; transform: scale(1.04); transition: transform 6s ease; }
+.m-explore__slide.is-active .m-explore__img { transform: scale(1); }
+.m-explore__img:not([src]), .m-explore__bg:not([src]) { visibility: hidden; }
+.m-explore__counter { position: absolute; top: 14px; left: 14px; z-index: 3; padding: 5px 12px; border-radius: 999px; background: rgba(15, 23, 42, .6); color: #fff; font-size: 12px; font-weight: 600; backdrop-filter: blur(6px); }
+.m-explore__tools { position: absolute; top: 12px; right: 12px; z-index: 3; display: flex; gap: 8px; }
+.m-explore__btn { display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: rgba(15, 23, 42, .55); color: #fff; cursor: pointer; backdrop-filter: blur(6px); transition: background .2s, opacity .2s; }
+.m-explore__btn:hover { background: rgba(15, 23, 42, .85); }
+.m-explore__btn--prev, .m-explore__btn--next { position: absolute; top: 50%; z-index: 3; width: 44px; height: 44px; translate: 0 -50%; opacity: 0; }
+.m-explore__btn--prev { left: 12px; }
+.m-explore__btn--next { right: 12px; }
+.m-explore__stage:hover .m-explore__btn--prev, .m-explore__stage:hover .m-explore__btn--next, .m-explore__stage:focus-within .m-explore__btn--prev, .m-explore__stage:focus-within .m-explore__btn--next { opacity: 1; }
+.m-explore__stage.is-single .m-explore__btn--prev, .m-explore__stage.is-single .m-explore__btn--next, .m-explore__stage.is-single [data-explore="play"] { display: none; }
+.m-explore .i-play { display: none; }
+.m-explore.is-paused .i-play { display: block; }
+.m-explore.is-paused .i-pause { display: none; }
+.m-explore__caption { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: grid; gap: 3px; padding: 56px 18px 18px; background: linear-gradient(to top, rgba(15, 23, 42, .85), transparent); color: #fff; pointer-events: none; }
+.m-explore__caption strong { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-explore__caption span { font-size: 12px; opacity: .85; }
+.m-explore__progress { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: 3px; background: rgba(255, 255, 255, .15); }
+.m-explore__progress span { display: block; width: 0; height: 100%; background: var(--m-accent); }
+.m-explore__progress span.is-animating { animation-name: m-explore-progress; animation-timing-function: linear; animation-fill-mode: forwards; animation-play-state: paused; }
+.m-explore__stage.is-running .m-explore__progress span.is-animating { animation-play-state: running; }
+@keyframes m-explore-progress { from { width: 0; } to { width: 100%; } }
+.m-explore__mapwrap { position: relative; display: flex; min-height: 320px; }
+.m-explore__map { min-height: 100%; }
+.m-explore__where { position: absolute; left: 12px; right: 60px; top: 12px; z-index: 500; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; pointer-events: none; }
+.m-explore__where > * { pointer-events: auto; padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, .94); box-shadow: 0 4px 14px -6px rgba(15, 23, 42, .45); font-size: 12px; color: var(--m-text); }
+.m-explore__where b { color: var(--m-navy); }
+.m-explore__where button { border: 0; background: var(--m-navy); color: #fff; font-weight: 600; cursor: pointer; }
+.m-explore__where button:hover { background: var(--m-blue); }
+.m-xpin span { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 3px solid #fff; background: var(--m-navy); color: #fff; font-size: 11px; font-weight: 700; box-shadow: 0 2px 8px rgba(15, 23, 42, .45); transition: transform .25s, background .25s, opacity .25s; }
+.m-xpin.is-visited span { background: var(--m-sky); }
+.m-xpin.is-active span { background: var(--m-accent); transform: scale(1.3); box-shadow: 0 0 0 6px rgba(242, 107, 29, .3), 0 2px 8px rgba(15, 23, 42, .45); }
+.m-xpin.is-dim span { opacity: .35; background: #94a3b8; }
+.m-xpin:hover span { transform: scale(1.15); }
+.m-xpin.is-active:hover span { transform: scale(1.3); }
+.m-explore__strip { position: relative; display: flex; gap: 8px; margin-top: 14px; padding: 2px 2px 8px; overflow-x: auto; scrollbar-width: thin; }
+.m-explore__strip button { flex: none; width: 76px; height: 56px; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: var(--m-surface-soft); cursor: pointer; opacity: .6; outline: 2px solid transparent; outline-offset: 2px; transition: opacity .2s, outline-color .2s; }
+.m-explore__strip button:hover { opacity: 1; }
+.m-explore__strip button.is-active { opacity: 1; outline-color: var(--m-accent); }
+.m-explore__strip img { width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 900px) {
+    .m-explore__frame { grid-template-columns: 1fr; }
+    .m-explore__stage { min-height: 0; }
+    .m-explore__mapwrap { min-height: 260px; }
+    .m-explore__btn--prev, .m-explore__btn--next { opacity: 1; width: 38px; height: 38px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .m-explore__slide, .m-explore__img, .m-xpin span { transition: none; }
+}
+
+/* Lokasi foto di grid galeri */
+.m-photo__locate { margin: 0; padding: 0 12px 12px; font-size: 12px; }
+.m-photo__locate summary, .m-photo__locate--climb { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; color: var(--m-navy); font-weight: 600; }
+.m-photo__locate summary { padding: 4px 10px; border-radius: 999px; background: #dbe6ff; cursor: pointer; list-style: none; }
+.m-photo__locate summary::-webkit-details-marker { display: none; }
+.m-photo__locate summary.is-empty { background: #ffedd5; color: #c2410c; }
+.m-photo__locate summary span, .m-photo__locate--climb span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-photo__locate--climb { color: var(--m-muted); font-weight: 500; }
+.m-photo__locate svg { flex: none; }
+.m-photo__locate form { display: flex; gap: 6px; margin-top: 8px; }
+.m-photo__locate form .m-input { min-width: 0; padding: 7px 10px; font-size: 13px; }
+.m-photo__locate .m-field__hint, .m-photo__locate .m-field__error { display: block; margin-top: 6px; }
+
+/* Ubah keterangan foto Galeri Bersama (super admin) */
+.m-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.m-photo { scroll-margin-top: 90px; }
+.m-photo:target { box-shadow: 0 0 0 3px var(--m-accent), var(--m-shadow); }
+.m-caption-edit summary { display: flex; align-items: center; gap: 6px; min-width: 0; cursor: pointer; list-style: none; }
+.m-caption-edit summary::-webkit-details-marker { display: none; }
+.m-caption-edit summary svg { flex: none; color: var(--m-muted); }
+.m-caption-edit summary:hover svg, .m-caption-edit[open] summary svg { color: var(--m-blue); }
+.m-caption-edit form { display: flex; gap: 6px; margin: 6px 0; }
+.m-caption-edit form .m-input { min-width: 0; padding: 7px 10px; font-size: 13px; }
+.m-caption-edit .m-field__error { display: block; margin-bottom: 6px; }

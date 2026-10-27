@@ -27,6 +27,22 @@ class PhotoPolicy
     }
 
     /**
+     * Mengubah keterangan foto Galeri Bersama; khusus super admin.
+     */
+    public function rename(User $user, Photo $photo): bool
+    {
+        return $user->isSuperAdmin() && $photo->isShared();
+    }
+
+    /**
+     * Mengatur lokasi foto; foto pendakian selalu mengikuti gunung pendakiannya.
+     */
+    public function locate(User $user, Photo $photo): bool
+    {
+        return $photo->climb_id === null && $this->delete($user, $photo);
+    }
+
+    /**
      * Membagikan foto pribadi ke Galeri Bersama, atau menariknya kembali.
      */
     public function share(User $user, Photo $photo): bool

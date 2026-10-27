@@ -104,6 +104,47 @@
         @endif
     </div>
 
+    <div class="m-grid m-grid--3" style="margin-bottom: 20px">
+        <article class="m-card">
+            <h2 class="m-card__title" style="margin-bottom: 14px">Kesehatan</h2>
+            <dl class="m-dl">
+                <div><dt>Berat terakhir</dt><dd>{{ $health['latestWeight'] ? number_format($health['latestWeight']->weight_kg, 1, ',', '.').' kg' : '–' }}</dd></div>
+                <div><dt>Perubahan total</dt><dd>{{ $health['totalChange'] !== null ? ($health['totalChange'] > 0 ? '+' : '').number_format($health['totalChange'], 1, ',', '.').' kg' : '–' }}</dd></div>
+                <div><dt>Tinggi badan</dt><dd>{{ $health['heightCm'] ? $health['heightCm'].' cm' : '–' }}</dd></div>
+                <div><dt>IMT</dt><dd>{{ $health['bmi'] ? number_format($health['bmi'], 1, ',', '.').' ('.$health['bmiCategory'].')' : '–' }}</dd></div>
+                <div><dt>Lari bulan ini</dt><dd>{{ $health['monthRuns'] }}× &middot; {{ number_format($health['monthDistance'], 1, ',', '.') }} km</dd></div>
+                <div><dt>Total lari</dt><dd>{{ number_format($health['totalDistance'], 1, ',', '.') }} km</dd></div>
+                <div><dt>Pace terbaik</dt><dd>{{ $health['bestPace'] ?? '–' }}</dd></div>
+            </dl>
+        </article>
+
+        <article class="m-card">
+            <h2 class="m-card__title" style="margin-bottom: 14px">Berat badan terakhir</h2>
+            @if ($weights->isEmpty())
+                <p class="m-empty">Belum ada catatan.</p>
+            @else
+                <dl class="m-dl">
+                    @foreach ($weights as $log)
+                        <div><dt>{{ $log->recorded_on->translatedFormat('d M Y') }}</dt><dd>{{ number_format($log->weight_kg, 1, ',', '.') }} kg</dd></div>
+                    @endforeach
+                </dl>
+            @endif
+        </article>
+
+        <article class="m-card">
+            <h2 class="m-card__title" style="margin-bottom: 14px">Lari terakhir</h2>
+            @if ($runs->isEmpty())
+                <p class="m-empty">Belum ada catatan.</p>
+            @else
+                <dl class="m-dl">
+                    @foreach ($runs as $run)
+                        <div><dt>{{ $run->run_on->translatedFormat('d M Y') }}</dt><dd>{{ number_format($run->distance_km, 2, ',', '.') }} km &middot; {{ $run->formattedPace() }}</dd></div>
+                    @endforeach
+                </dl>
+            @endif
+        </article>
+    </div>
+
     <div class="m-pagehead" style="margin-bottom: 14px">
         <div>
             <h2 class="m-card__title">Galeri pribadi</h2>
