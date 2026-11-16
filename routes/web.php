@@ -2,9 +2,16 @@
 
 use App\Http\Controllers\Admin\FeaturedProfileController;
 use App\Http\Controllers\Admin\FeaturedStoryController;
+use App\Http\Controllers\Admin\FilamentLotController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\MemberPhotoController;
+use App\Http\Controllers\Admin\SaleController;
 use App\Http\Controllers\Admin\SharedPhotoApprovalController;
+use App\Http\Controllers\Admin\StoreCartController;
+use App\Http\Controllers\Admin\StoreItemBatchController;
+use App\Http\Controllers\Admin\StoreItemBulkController;
+use App\Http\Controllers\Admin\StoreItemController;
+use App\Http\Controllers\Admin\StoreRestockController;
 use App\Http\Controllers\Admin\StoryController as AdminStoryController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AvatarController;
@@ -113,5 +120,29 @@ Route::middleware('auth')->group(function () {
         Route::get('/cerita', [AdminStoryController::class, 'index'])->name('stories.index');
         Route::post('/cerita/{story}/tampilkan', [FeaturedStoryController::class, 'store'])->name('stories.feature');
         Route::delete('/cerita/{story}/tampilkan', [FeaturedStoryController::class, 'destroy'])->name('stories.unfeature');
+
+        Route::prefix('toko')->name('store.')->group(function () {
+            Route::get('/', [StoreCartController::class, 'index'])->name('pos');
+            Route::post('/keranjang/gantungan-kunci', [StoreCartController::class, 'storeKeychain'])->name('cart.keychain');
+            Route::post('/keranjang/item', [StoreCartController::class, 'storeItem'])->name('cart.item');
+            Route::delete('/keranjang/{index}', [StoreCartController::class, 'destroy'])->whereNumber('index')->name('cart.remove');
+            Route::delete('/keranjang', [StoreCartController::class, 'clear'])->name('cart.clear');
+
+            Route::post('/item/set', StoreItemBatchController::class)->name('items.batch');
+            Route::post('/item/massal', StoreItemBulkController::class)->name('items.bulk');
+            Route::post('/item/{item}/stok', StoreRestockController::class)->name('items.restock');
+            Route::resource('item', StoreItemController::class)
+                ->except(['show'])
+                ->names('items');
+
+            Route::resource('filament', FilamentLotController::class)
+                ->except(['create', 'show'])
+                ->names('filament');
+
+            Route::get('/penjualan', [SaleController::class, 'index'])->name('sales.index');
+            Route::post('/penjualan', [SaleController::class, 'store'])->name('sales.store');
+            Route::get('/penjualan/{sale}', [SaleController::class, 'show'])->name('sales.show');
+            Route::get('/penjualan/{sale}/struk', [SaleController::class, 'receipt'])->name('sales.receipt');
+        });
     });
 });

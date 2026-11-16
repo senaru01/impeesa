@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    /*
+    | QRIS statis toko (mis. dari GoPay Merchant). Isi teks hasil scan QR-nya; kasir membuat
+    | QRIS dengan nominal otomatis dari payload ini.
+    */
+    'qris' => [
+        'payload' => env('STORE_QRIS_PAYLOAD'),
+    ],
+
 ];

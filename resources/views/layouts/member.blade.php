@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700" rel="stylesheet">
     @stack('head')
-    <link rel="stylesheet" href="{{ asset('css/member.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/member.css') }}?v={{ filemtime(public_path('css/member.css')) }}">
 </head>
 <body class="member">
     @php($authUser = auth()->user())
@@ -51,6 +51,7 @@
                     <span class="m-tabs__sep" aria-hidden="true"></span>
                     <a href="{{ route('admin.members.index') }}" @class(['is-active' => request()->routeIs('admin.members.*')])>Anggota</a>
                     <a href="{{ route('admin.stories.index') }}" @class(['is-active' => request()->routeIs('admin.stories.*')])>Kelola Cerita</a>
+                    <a href="{{ route('admin.store.pos') }}" @class(['is-active' => request()->routeIs('admin.store.*')])>Toko</a>
                 @endcan
             </nav>
         </div>
