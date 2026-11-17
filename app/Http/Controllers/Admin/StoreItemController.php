@@ -33,7 +33,7 @@ class StoreItemController extends Controller
         return view('admin.store.items.index', [
             'items' => $items,
             'categories' => StoreItemCategory::cases(),
-            'lots' => FilamentLot::query()->available()->orderBy('color')->orderBy('purchased_on')->get(),
+            'lots' => FilamentLot::activeRolls(),
             'colors' => StoreItem::query()->whereNotNull('color')->distinct()->orderBy('color')->pluck('color'),
             'filters' => $filters,
             'isFiltered' => $filters['category'] !== null || $filters['color'] !== '' || $filters['search'] !== '' || $filters['lowStock'],
@@ -69,7 +69,7 @@ class StoreItemController extends Controller
         return view('admin.store.items.form', [
             'item' => new StoreItem(['category' => $category, 'is_active' => true, 'stock' => 0, 'min_stock' => 5, 'filament_grams' => 0]),
             'categories' => StoreItemCategory::cases(),
-            'lots' => FilamentLot::query()->available()->orderBy('color')->orderBy('purchased_on')->get(),
+            'lots' => FilamentLot::activeRolls(),
             'colors' => StoreItem::query()->whereNotNull('color')->distinct()->orderBy('color')->pluck('color'),
         ]);
     }
@@ -104,7 +104,7 @@ class StoreItemController extends Controller
             'item' => $item,
             'movements' => $item->movements()->with('sale')->latest()->latest('id')->take(20)->get(),
             'categories' => StoreItemCategory::cases(),
-            'lots' => FilamentLot::query()->available()->orderBy('color')->orderBy('purchased_on')->get(),
+            'lots' => FilamentLot::activeRolls(),
             'colors' => StoreItem::query()->whereNotNull('color')->distinct()->orderBy('color')->pluck('color'),
         ]);
     }

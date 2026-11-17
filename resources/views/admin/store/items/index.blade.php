@@ -1,6 +1,7 @@
 @extends('layouts.member')
 
 @section('title', 'Item & Stok')
+@section('wrap', 'm-wrap--wide')
 
 @php
     $rp = fn (int $value): string => 'Rp '.number_format($value, 0, ',', '.');
@@ -19,7 +20,7 @@
 
     @include('admin.store.nav')
 
-    <div class="m-grid" style="margin-bottom: 20px">
+    <div class="m-grid m-stats" style="margin-bottom: 20px">
         <article class="m-card">
             <p class="m-health__label">Jumlah item</p>
             <p class="m-health__value">{{ number_format($totals->item_count, 0, ',', '.') }}</p>
@@ -27,12 +28,12 @@
         </article>
         <article class="m-card">
             <p class="m-health__label">Nilai stok (modal)</p>
-            <p class="m-health__value m-money" style="font-size: 30px">{{ $rp((int) $totals->stock_value) }}</p>
+            <p class="m-health__value m-money">{{ $rp((int) $totals->stock_value) }}</p>
             <p class="m-health__meta">stok × harga beli</p>
         </article>
         <article class="m-card">
             <p class="m-health__label">Potensi omzet</p>
-            <p class="m-health__value m-money" style="font-size: 30px">{{ $rp((int) $totals->potential_revenue) }}</p>
+            <p class="m-health__value m-money">{{ $rp((int) $totals->potential_revenue) }}</p>
             <p class="m-health__meta">stok × harga jual</p>
         </article>
         <article class="m-card">
@@ -42,22 +43,22 @@
         </article>
     </div>
 
-    <div class="m-layout">
+    <div class="m-layout m-layout--store m-layout--table">
         <div class="m-card">
-            <form method="GET" class="m-actions" style="margin-bottom: 16px">
-                <select name="kategori" class="m-input" style="max-width: 170px" aria-label="Kategori">
+            <form method="GET" class="m-actions m-filterbar" style="margin-bottom: 16px">
+                <select name="kategori" class="m-input" aria-label="Kategori">
                     <option value="">Semua kategori</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->value }}" @selected($filters['category'] === $category)>{{ $category->label() }}</option>
                     @endforeach
                 </select>
-                <select name="warna" class="m-input" style="max-width: 160px" aria-label="Warna">
+                <select name="warna" class="m-input" aria-label="Warna">
                     <option value="">Semua warna</option>
                     @foreach ($colors as $color)
                         <option value="{{ $color }}" @selected($filters['color'] === $color)>{{ $color }}</option>
                     @endforeach
                 </select>
-                <input type="search" name="q" value="{{ $filters['search'] }}" class="m-input" placeholder="Cari nama / huruf" style="max-width: 200px">
+                <input type="search" name="q" value="{{ $filters['search'] }}" class="m-input" placeholder="Cari nama / huruf">
                 <label class="m-check"><input type="checkbox" name="menipis" value="1" @checked($filters['lowStock'])> Stok menipis</label>
                 <button type="submit" class="m-btn m-btn--ghost">Filter</button>
             </form>
@@ -83,13 +84,13 @@
             <div class="m-table-wrap m-table-wrap--sticky">
                 <table class="m-table">
                     <thead>
-                        <tr><th><input type="checkbox" data-bulk-toggle aria-label="Pilih semua di halaman ini"></th><th>Item</th><th>Stok</th><th>Modal</th><th>Harga jual</th><th>Margin</th><th>Filament</th><th>Produksi</th><th></th></tr>
+                        <tr><th><input type="checkbox" data-bulk-toggle aria-label="Pilih semua di halaman ini"></th><th class="m-col-item">Item</th><th>Stok</th><th>Modal</th><th>Harga jual</th><th class="m-hide-md">Margin</th><th>Filament</th><th>Produksi</th><th></th></tr>
                     </thead>
                     <tbody>
                         @forelse ($items as $item)
                             <tr @class(['is-low' => $item->isLowStock()])>
                                 <td><input type="checkbox" name="ids[]" value="{{ $item->id }}" form="bulk-form" data-bulk-item aria-label="Pilih {{ $item->label() }}"></td>
-                                <td>
+                                <td class="m-col-item">
                                     <p class="m-list__title">{{ $item->label() }}</p>
                                     <p class="m-list__meta">
                                         {{ $item->category->label() }}
@@ -107,7 +108,7 @@
                                     @endif
                                 </td>
                                 <td class="m-money">{{ $rp($item->selling_price) }}</td>
-                                <td class="m-money">{{ $rp($item->margin()) }}</td>
+                                <td class="m-money m-hide-md">{{ $rp($item->margin()) }}</td>
                                 <td style="white-space: nowrap">
                                     {{ $gram($item->filament_grams) }} g
                                     @if ($item->hasLetterColor() && $item->filament_grams > 0)
@@ -126,14 +127,14 @@
                                             <select name="filament_lot_id" class="m-input m-quickstock__lot" aria-label="Filament untuk {{ $item->label() }}">
                                                 <option value="">Tanpa roll</option>
                                                 @foreach ($lots as $lot)
-                                                    <option value="{{ $lot->id }}" @selected($lot->id === $lots->firstWhere('color', $item->color)?->id)>{{ $lot->label() }}</option>
+                                                    <option value="{{ $lot->id }}" @selected($lot->id === $lots->firstWhere('color', $item->color)?->id)>{{ $lot->optionLabel() }}</option>
                                                 @endforeach
                                             </select>
                                             @if ($item->hasLetterColor())
                                                 <select name="letter_filament_lot_id" class="m-input m-quickstock__lot" aria-label="Roll huruf untuk {{ $item->label() }}">
                                                     <option value="">Huruf: roll sama</option>
                                                     @foreach ($lots as $lot)
-                                                        <option value="{{ $lot->id }}" @selected($lot->id === $lots->firstWhere('color', $item->letter_color)?->id)>Huruf: {{ $lot->label() }}</option>
+                                                        <option value="{{ $lot->id }}" @selected($lot->id === $lots->firstWhere('color', $item->letter_color)?->id)>Huruf: {{ $lot->optionLabel() }}</option>
                                                     @endforeach
                                                 </select>
                                             @endif
@@ -163,7 +164,7 @@
             <div class="m-pagination">{{ $items->links('pagination::simple-bootstrap-5') }}</div>
         </div>
 
-        <div style="display: grid; gap: 20px">
+        <div class="m-side">
             <form method="POST" action="{{ route('admin.store.items.batch') }}" class="m-card m-form" data-category-form>
                 @csrf
                 <h2 class="m-card__title">Buat satu set sekaligus</h2>
@@ -217,17 +218,17 @@
                         <select id="batch_filament_lot_id" name="filament_lot_id" class="m-input">
                             <option value="">Tidak pakai roll (isi modal manual)</option>
                             @foreach ($lots as $lot)
-                                <option value="{{ $lot->id }}" @selected((int) old('filament_lot_id') === $lot->id)>{{ $lot->label() }} · Rp{{ number_format($lot->pricePerGram(), 1, ',', '.') }}/g</option>
+                                <option value="{{ $lot->id }}" @selected((int) old('filament_lot_id') === $lot->id)>{{ $lot->optionLabel() }}</option>
                             @endforeach
                         </select>
-                        <span class="m-field__hint"><span data-show-for="keycap">Roll warna badan. </span>Modal = biaya tetap + gram × harga/gram roll, dan gram stok awal dipotong dari roll.</span>
+                        <span class="m-field__hint"><span data-show-for="keycap">Roll warna badan. </span>Satu pilihan per warna; gram dipotong dari roll terlama dulu (FIFO), lalu lanjut ke roll berikutnya. Modal = biaya tetap + gram × harga/gram roll.</span>
                     </div>
                     <div class="m-field m-form__full" data-show-for="keycap">
                         <label for="batch_letter_filament_lot_id">Roll warna huruf</label>
                         <select id="batch_letter_filament_lot_id" name="letter_filament_lot_id" class="m-input">
                             <option value="">Sama dengan roll badan</option>
                             @foreach ($lots as $lot)
-                                <option value="{{ $lot->id }}" @selected((int) old('letter_filament_lot_id') === $lot->id)>{{ $lot->label() }} · Rp{{ number_format($lot->pricePerGram(), 1, ',', '.') }}/g</option>
+                                <option value="{{ $lot->id }}" @selected((int) old('letter_filament_lot_id') === $lot->id)>{{ $lot->optionLabel() }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -242,7 +243,7 @@
                     </div>
                     <div class="m-field">
                         <label for="batch_selling_price">Harga jual (Rp)</label>
-                        <input id="batch_selling_price" name="selling_price" type="number" min="0" step="1" class="m-input" value="{{ old('selling_price') }}" required>
+                        <input id="batch_selling_price" name="selling_price" type="number" min="0" step="1" class="m-input" value="{{ old('selling_price') }}" placeholder="keycap Rp1.000 · base ikut tabel">
                     </div>
                     <div class="m-field">
                         <label for="batch_filament_grams">Filament per pcs (gram)</label>
@@ -266,8 +267,16 @@
                             <input id="filament_grams_step" name="filament_grams_step" type="number" min="0" step="any" class="m-input" value="{{ old('filament_grams_step') }}">
                         </div>
                     </div>
-                    <span class="m-field__hint">Contoh: base 1 huruf Rp5.000, +Rp1.000 per huruf → base 5 huruf Rp9.000. Kenaikan modal hanya dipakai bila tidak pakai roll.</span>
+                    <span class="m-field__hint">Hanya dipakai bila harga jual diisi. Contoh: base 1 huruf Rp5.000, +Rp1.000 per huruf → base 5 huruf Rp9.000. Kenaikan modal hanya dipakai bila tidak pakai roll.</span>
                 </details>
+                <div class="m-price-table" data-show-for="base_cap">
+                    <p class="m-field__hint">Harga jual kosong = tabel harga base cap:</p>
+                    <dl>
+                        @foreach (\App\Models\StoreItem::BASE_CAP_PRICES as $size => $price)
+                            <div><dt>{{ $size }} huruf</dt><dd>{{ $rp($price) }}</dd></div>
+                        @endforeach
+                    </dl>
+                </div>
                 <datalist id="store-colors">@foreach ($colors as $color)<option value="{{ $color }}">@endforeach</datalist>
                 <button type="submit" class="m-btn m-btn--primary">Buat set</button>
             </form>

@@ -664,3 +664,89 @@ body.ed { background: #fef2f2; font-family: system-ui, -apple-system, 'Segoe UI'
 .m-qris svg { width: 240px; height: 240px; max-width: 100%; }
 .m-qris__label { margin: 0; font-weight: 700; }
 .m-qris__amount { margin: 0; font-size: 26px; font-weight: 800; }
+
+/* ---------------- Toko: layar lebar & tablet kasir (Galaxy Tab S8, 1280×800) ---------------- */
+.m-wrap--wide { width: min(2200px, 100% - 48px); }
+.m-side { display: grid; gap: 20px; align-content: start; min-width: 0; }
+.m-stats .m-health__value.m-money { font-size: clamp(24px, 2.1vw, 32px); }
+.m-filterbar .m-input { width: auto; flex: 1 1 150px; max-width: 220px; }
+.m-col-item { min-width: 190px; }
+.m-quickstock { flex-wrap: wrap; align-items: center; min-width: 260px; }
+.m-quickstock .m-quickstock__lot { width: auto !important; flex: 1 1 100%; max-width: 320px; }
+.m-table tr.is-muted td { opacity: .55; }
+.m-fgroup__head td { padding-top: 22px; background: var(--m-surface-soft); }
+.m-table--filament tbody.m-fgroup tr:not(.m-fgroup__head) td:first-child { padding-left: 58px; }
+.m-price-table dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 16px; margin: 6px 0 0; font-size: 13px; }
+.m-price-table dl div { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; border-bottom: 1px dashed var(--m-line); }
+.m-price-table dt { color: var(--m-muted); }
+.m-price-table dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Layar lebar: tabel & formulir samping ikut melebar */
+@media (min-width: 1700px) {
+    .m-layout--store { grid-template-columns: minmax(0, 1fr) 440px; gap: 24px; }
+    .m-quickstock { flex-wrap: nowrap; }
+    .m-quickstock .m-quickstock__lot { flex: 1 1 220px; }
+}
+
+/* Tabel item butuh lebar penuh di tablet landscape; formulir pindah ke bawah, 2 kolom */
+@media (max-width: 1440px) {
+    .m-layout--table { grid-template-columns: minmax(0, 1fr); }
+    .m-layout--table .m-side { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+}
+@media (max-width: 1100px) {
+    .m-hide-md { display: none; }
+}
+@media (max-width: 760px) {
+    .m-layout--table .m-side { grid-template-columns: 1fr; }
+    .m-filterbar .m-input { max-width: none; flex-basis: 100%; }
+    .m-table--filament tbody.m-fgroup tr:not(.m-fgroup__head) td:first-child { padding-left: 12px; }
+}
+
+/* Kasir 2 kolom: keranjang tetap terlihat dan bisa digulir sendiri */
+@media (min-width: 1201px) {
+    .m-layout--store .m-sticky { max-height: calc(100vh - 160px); overflow-y: auto; overscroll-behavior: contain; padding-bottom: 4px; }
+}
+
+/* Layar pendek (tablet landscape): header tidak menempel supaya area kerja lebih tinggi */
+@media (max-height: 860px) and (min-width: 761px) {
+    .m-header { position: static; }
+    .m-header__top { padding: 10px 0 4px; }
+    .m-main { padding-top: 20px; }
+    .m-pagehead { margin-bottom: 16px; }
+    .m-title { font-size: clamp(26px, 3vw, 36px); }
+    .m-sticky { top: 16px; }
+    .m-layout--store .m-sticky { max-height: calc(100vh - 32px); }
+    .m-showcase .k3d { height: 320px; }
+}
+
+/* Layar sentuh: target sentuh minimal ~44px */
+@media (pointer: coarse) {
+    .m-input { min-height: 44px; }
+    .m-btn { min-height: 44px; }
+    .m-btn--sm { min-height: 38px; padding: 8px 16px; font-size: 13px; }
+    .m-check input, .m-table input[type="checkbox"] { width: 22px; height: 22px; }
+    .m-subnav a { padding: 11px 18px; font-size: 14px; }
+    .m-tabs a { padding-block: 14px 16px; }
+    .m-quickstock .m-input { min-height: 40px; font-size: 14px; }
+    .m-details summary { padding: 6px 0; }
+}
+
+/* Tablet portrait: kolom samping (keranjang & pembayaran) berdampingan di bawah */
+@media (min-width: 761px) and (max-width: 1200px) {
+    .m-layout--store .m-side { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+}
+
+/* ---------------- Aplikasi Kasir Impeesa (PWA menu Toko) ---------------- */
+.m-subnav__install { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 8px 16px; border-radius: 999px; border: 1px dashed var(--m-navy); background: transparent; color: var(--m-navy); font-size: 13px; font-weight: 700; }
+.m-subnav__install:hover { background: var(--m-surface); }
+.m-subnav__install[hidden] { display: none; }
+
+/* Saat dibuka sebagai aplikasi terpasang: hanya menu toko, seperti aplikasi kasir terpisah */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+    .is-store .m-tabs, .is-store .m-crumb { display: none; }
+    .is-store .m-header { position: static; }
+    .is-store .m-brand { pointer-events: none; }
+    .is-store .m-header__top { padding-bottom: 12px; }
+    .is-store .m-subnav { position: sticky; top: 0; z-index: 20; margin-inline: -4px; padding: 8px 4px; background: rgba(233, 238, 249, .92); backdrop-filter: blur(10px); }
+    .is-store .m-subnav__install { display: none; }
+}

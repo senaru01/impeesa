@@ -1,0 +1,27 @@
+{
+    "id": "/admin/toko",
+    "name": "Kasir Impeesa 3D Print",
+    "short_name": "Kasir Impeesa",
+    "description": "Kasir souvenir 3D print Impeesa: rakit gantungan kunci, stok, filament, dan penjualan.",
+    "lang": "id",
+    "dir": "ltr",
+    "start_url": "/admin/toko",
+    "scope": "/admin/toko",
+    "display": "standalone",
+    "orientation": "any",
+    "theme_color": "#1e3a8a",
+    "background_color": "#e9eef9",
+    "categories": ["business", "shopping"],
+    "icons": [
+        { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+        { "src": "/icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+        { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ],
+    "shortcuts": [
+        { "name": "Kasir", "url": "/admin/toko", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+        { "name": "Item & stok", "short_name": "Stok", "url": "/admin/toko/item", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+        { "name": "Filament", "url": "/admin/toko/filament", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+        { "name": "Penjualan & arus kas", "short_name": "Penjualan", "url": "/admin/toko/penjualan", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+    ]
+}

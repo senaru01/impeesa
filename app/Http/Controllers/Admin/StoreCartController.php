@@ -23,14 +23,17 @@ class StoreCartController extends Controller
     {
         $items = StoreItem::query()->active()->catalogOrder()->get();
         $todaySales = Sale::query()->whereDate('created_at', today());
+        $baseColors = $this->colorsOf($items, StoreItemCategory::BaseCap);
+        $accessories = $items->where('category', StoreItemCategory::Accessory)->values();
 
         return view('admin.store.pos', [
             'cart' => Sale::summarizeCart($request->session()->get(Sale::CART_SESSION_KEY, [])),
             'items' => $items,
             'keycapColors' => $this->keycapVariants($items),
-            'baseColors' => $this->colorsOf($items, StoreItemCategory::BaseCap),
+            'baseColors' => $baseColors,
             'switches' => $items->where('category', StoreItemCategory::Switch)->values(),
-            'accessories' => $items->where('category', StoreItemCategory::Accessory)->values(),
+            'accessories' => $accessories,
+            'defaultAccessoryId' => $this->defaultChain($accessories, old('base_color', $baseColors[0] ?? null))?->id,
             'catalog' => $this->catalog($items),
             'paymentMethods' => PaymentMethod::cases(),
             'today' => [
@@ -38,6 +41,19 @@ class StoreCartController extends Controller
                 'total' => (int) (clone $todaySales)->sum('total'),
             ],
         ]);
+    }
+
+    /**
+     * Rantai sudah termasuk harga base cap, jadi kasir langsung memilih rantai yang
+     * warnanya sama dengan base (atau rantai lain yang masih ada stoknya).
+     *
+     * @param  EloquentCollection<int, StoreItem>  $accessories
+     */
+    private function defaultChain(EloquentCollection $accessories, ?string $baseColor): ?StoreItem
+    {
+        $chains = $accessories->filter(fn (StoreItem $item) => $item->stock > 0 && str_starts_with(mb_strtolower($item->name), 'rantai'));
+
+        return $chains->firstWhere('color', $baseColor) ?? $chains->first();
     }
 
     public function storeKeychain(KeychainCartRequest $request): RedirectResponse

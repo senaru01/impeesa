@@ -23,6 +23,14 @@ class StoreItem extends Model
     public const MAX_BASE_SIZE = 10;
 
     /**
+     * Harga jual base cap per jumlah huruf. Base pendek dibuat murah (subsidi silang)
+     * supaya harga gantungan kunci tetap bersaing; 8 huruf ke atas harganya sama.
+     *
+     * @var array<int, int>
+     */
+    public const BASE_CAP_PRICES = [1 => 9000, 2 => 10000, 3 => 11000, 4 => 12000, 5 => 15000, 6 => 16000, 7 => 17000, 8 => 18000, 9 => 18000, 10 => 18000];
+
+    /**
      * Karakter keycap standar: huruf A-Z lalu angka 0-9.
      */
     public const KEYCAP_CODES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -106,6 +114,11 @@ class StoreItem extends Model
         return $letterColor ? "{$color}, huruf {$letterColor}" : $color;
     }
 
+    public static function baseCapPrice(int $size): int
+    {
+        return self::BASE_CAP_PRICES[$size] ?? self::BASE_CAP_PRICES[self::MAX_BASE_SIZE];
+    }
+
     /**
      * Nama bawaan item bila tidak diisi manual.
      */
@@ -173,8 +186,9 @@ class StoreItem extends Model
 
     /**
      * Tambah stok hasil produksi/pembelian. Bila dicetak dari roll filament, modal dihitung ulang
-     * dari harga roll dan sisa gram roll dikurangi. Keycap dua warna memotong 5% gram dari roll
-     * huruf. Panggil di dalam transaksi database.
+     * dari harga roll dan sisa gram roll dikurangi. Roll diambil FIFO per jenis & warna: roll
+     * terlama dihabiskan dulu, kekurangannya lanjut ke roll berikutnya. Keycap dua warna memotong
+     * 5% gram dari roll huruf. Panggil di dalam transaksi database.
      */
     public function produce(int $quantity, ?User $user, ?FilamentLot $lot = null, ?int $unitCost = null, ?string $notes = null, ?FilamentLot $letterLot = null): StockMovement
     {
@@ -184,9 +198,11 @@ class StoreItem extends Model
         $letterGrams = $letterLot ? round($split['letter'] * $quantity, 2) : 0.0;
 
         if ($lot) {
-            $unitCost = $this->unitCostFrom($lot, $letterLot);
-            $lot->decrement('remaining_grams', $mainGrams);
-            $letterLot?->decrement('remaining_grams', $letterGrams);
+            $main = $lot->consume($mainGrams);
+            $letter = $letterLot?->consume($letterGrams);
+            $unitCost = $this->fixed_cost + (int) round(($main['cost'] + ($letter['cost'] ?? 0)) / max(1, $quantity));
+            $lot = FilamentLot::find(array_key_first($main['lots']) ?? $lot->id);
+            $letterLot = $letter ? FilamentLot::find(array_key_first($letter['lots']) ?? $letterLot->id) : null;
             $this->purchase_price = $unitCost;
         }
 

@@ -81,7 +81,7 @@
                         <select id="filament_lot_id" name="filament_lot_id" class="m-input">
                             <option value="">Tidak pakai roll (barang beli jadi / isi modal manual)</option>
                             @foreach ($lots as $lot)
-                                <option value="{{ $lot->id }}" @selected((int) old('filament_lot_id') === $lot->id)>{{ $lot->label() }} · Rp{{ number_format($lot->pricePerGram(), 1, ',', '.') }}/g</option>
+                                <option value="{{ $lot->id }}" @selected((int) old('filament_lot_id') === $lot->id)>{{ $lot->optionLabel() }}</option>
                             @endforeach
                         </select>
                         <span class="m-field__hint" data-show-for="keycap">Roll warna badan cap.</span>
@@ -91,7 +91,7 @@
                         <select id="letter_filament_lot_id" name="letter_filament_lot_id" class="m-input">
                             <option value="">Sama dengan roll badan</option>
                             @foreach ($lots as $lot)
-                                <option value="{{ $lot->id }}" @selected((int) old('letter_filament_lot_id') === $lot->id)>{{ $lot->label() }} · Rp{{ number_format($lot->pricePerGram(), 1, ',', '.') }}/g</option>
+                                <option value="{{ $lot->id }}" @selected((int) old('letter_filament_lot_id') === $lot->id)>{{ $lot->optionLabel() }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -138,10 +138,10 @@
                             <select id="restock_lot" name="filament_lot_id" class="m-input">
                                 <option value="">Tanpa roll (isi biaya manual)</option>
                                 @foreach ($lots as $lot)
-                                    <option value="{{ $lot->id }}" @selected(old('filament_lot_id') ? (int) old('filament_lot_id') === $lot->id : $lot->id === $lots->firstWhere('color', $item->color)?->id)>{{ $lot->label() }} · modal {{ $rp($item->unitCostFrom($lot)) }}/pcs</option>
+                                    <option value="{{ $lot->id }}" @selected(old('filament_lot_id') ? (int) old('filament_lot_id') === $lot->id : $lot->id === $lots->firstWhere('color', $item->color)?->id)>{{ $lot->optionLabel() }} · modal {{ $rp($item->unitCostFrom($lot)) }}/pcs</option>
                                 @endforeach
                             </select>
-                            <span class="m-field__hint">{{ $rp($item->fixed_cost) }} biaya tetap + {{ number_format($item->filament_grams, 1, ',', '.') }} g × harga/gram roll. Gram dipotong dari roll.</span>
+                            <span class="m-field__hint">{{ $rp($item->fixed_cost) }} biaya tetap + {{ number_format($item->filament_grams, 1, ',', '.') }} g × harga/gram roll. Gram dipotong dari roll terlama dulu (FIFO).</span>
                         </div>
                         @if ($item->hasLetterColor())
                             <div class="m-field">
@@ -149,7 +149,7 @@
                                 <select id="restock_letter_lot" name="letter_filament_lot_id" class="m-input">
                                     <option value="">Sama dengan roll badan</option>
                                     @foreach ($lots as $lot)
-                                        <option value="{{ $lot->id }}" @selected(old('letter_filament_lot_id') ? (int) old('letter_filament_lot_id') === $lot->id : $lot->id === $lots->firstWhere('color', $item->letter_color)?->id)>{{ $lot->label() }}</option>
+                                        <option value="{{ $lot->id }}" @selected(old('letter_filament_lot_id') ? (int) old('letter_filament_lot_id') === $lot->id : $lot->id === $lots->firstWhere('color', $item->letter_color)?->id)>{{ $lot->optionLabel() }}</option>
                                     @endforeach
                                 </select>
                                 <span class="m-field__hint">{{ \App\Models\StoreItem::LETTER_FILAMENT_SHARE * 100 }}% gram ({{ number_format($item->filament_grams * \App\Models\StoreItem::LETTER_FILAMENT_SHARE, 2, ',', '.') }} g/pcs) diambil dari roll ini, modal ikut harga roll huruf.</span>

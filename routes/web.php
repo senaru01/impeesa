@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\FeaturedProfileController;
 use App\Http\Controllers\Admin\FeaturedStoryController;
 use App\Http\Controllers\Admin\FilamentLotController;
+use App\Http\Controllers\Admin\FilamentWasteController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\MemberPhotoController;
 use App\Http\Controllers\Admin\SaleController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Admin\StoreItemBatchController;
 use App\Http\Controllers\Admin\StoreItemBulkController;
 use App\Http\Controllers\Admin\StoreItemController;
 use App\Http\Controllers\Admin\StoreRestockController;
+use App\Http\Controllers\Admin\StoreServiceWorkerController;
 use App\Http\Controllers\Admin\StoryController as AdminStoryController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AvatarController;
@@ -40,6 +42,9 @@ use App\Http\Controllers\WeightLogController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', LandingController::class)->name('landing');
+
+// Service worker aplikasi kasir (PWA khusus menu Toko).
+Route::get('/admin/toko/sw.js', StoreServiceWorkerController::class)->name('admin.store.service-worker');
 Route::get('/peta-gunung', PetaGunungController::class)->name('peta');
 Route::get('/destinasi/{slug}', DestinationController::class)->name('destinasi');
 Route::get('/cerita-pendakian/{story}', PublicStoryController::class)->name('stories.public');
@@ -138,6 +143,7 @@ Route::middleware('auth')->group(function () {
             Route::resource('filament', FilamentLotController::class)
                 ->except(['create', 'show'])
                 ->names('filament');
+            Route::post('/filament-terbuang', FilamentWasteController::class)->name('filament.waste');
 
             Route::get('/penjualan', [SaleController::class, 'index'])->name('sales.index');
             Route::post('/penjualan', [SaleController::class, 'store'])->name('sales.store');

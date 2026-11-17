@@ -46,7 +46,7 @@ class StoreItemRequest extends FormRequest
             'letter_filament_lot_id' => [$this->isMethod('POST') && $this->filled('filament_lot_id') ? 'nullable' : 'exclude', 'integer', 'exists:filament_lots,id'],
             'purchase_price' => [$this->filled('filament_lot_id') && $this->isMethod('POST') ? 'nullable' : 'required', 'integer', 'min:0', 'max:100000000'],
             'fixed_cost' => ['nullable', 'integer', 'min:0', 'max:100000000'],
-            'selling_price' => ['required', 'integer', 'min:0', 'max:100000000'],
+            'selling_price' => [$this->input('category') === StoreItemCategory::BaseCap->value ? 'nullable' : 'required', 'integer', 'min:0', 'max:100000000'],
             'filament_grams' => ['nullable', 'numeric', 'min:0', 'max:99999'],
             'is_active' => ['boolean'],
         ];
@@ -146,6 +146,7 @@ class StoreItemRequest extends FormRequest
         $data['code'] = $category === StoreItemCategory::Keycap ? $data['code'] : null;
         $data['letter_color'] = $category === StoreItemCategory::Keycap ? ($data['letter_color'] ?? null) : null;
         $data['size'] = $category === StoreItemCategory::BaseCap ? (int) $data['size'] : null;
+        $data['selling_price'] = isset($data['selling_price']) ? (int) $data['selling_price'] : StoreItem::baseCapPrice((int) $data['size']);
         $data['name'] = filled($data['name'] ?? null) ? $data['name'] : StoreItem::defaultName($category, $data['code'], $data['size']);
 
         return $data;

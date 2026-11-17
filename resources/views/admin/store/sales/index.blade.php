@@ -1,6 +1,7 @@
 @extends('layouts.member')
 
 @section('title', 'Penjualan & Arus Kas')
+@section('wrap', 'm-wrap--wide')
 
 @php
     $rp = fn (int $value): string => ($value < 0 ? '-' : '').'Rp '.number_format(abs($value), 0, ',', '.');
@@ -22,30 +23,33 @@
 
     @include('admin.store.nav')
 
-    <div class="m-grid" style="margin-bottom: 20px">
+    <div class="m-grid m-stats" style="margin-bottom: 20px">
         <article class="m-card">
             <p class="m-health__label">Omzet (uang masuk)</p>
-            <p class="m-health__value m-money" style="font-size: 30px">{{ $rp($summary['revenue']) }}</p>
+            <p class="m-health__value m-money">{{ $rp($summary['revenue']) }}</p>
             <p class="m-health__meta">{{ $summary['count'] }} transaksi</p>
         </article>
         <article class="m-card">
             <p class="m-health__label">Laba kotor</p>
-            <p class="m-health__value m-money" style="font-size: 30px">{{ $rp($summary['profit']) }}</p>
+            <p class="m-health__value m-money">{{ $rp($summary['profit']) }}</p>
             <p class="m-health__meta">modal barang terjual {{ $rp($summary['cost']) }}</p>
+            @if ($summary['wastedValue'] > 0)
+                <p class="m-health__meta" style="color: var(--m-red)">filament terbuang/NG {{ $gram($summary['wastedGrams']) }} g &middot; -{{ $rp($summary['wastedValue']) }}</p>
+            @endif
         </article>
         <article class="m-card">
             <p class="m-health__label">Belanja (uang keluar)</p>
-            <p class="m-health__value m-money" style="font-size: 30px">{{ $rp($summary['cashOut']) }}</p>
+            <p class="m-health__value m-money">{{ $rp($summary['cashOut']) }}</p>
             <p class="m-health__meta">filament {{ $rp($summary['filamentPurchases']) }} &middot; barang jadi {{ $rp($summary['goodsPurchases']) }}</p>
         </article>
         <article class="m-card">
             <p class="m-health__label">Arus kas bersih</p>
-            <p class="m-health__value m-money" style="font-size: 30px; color: {{ $summary['netCash'] < 0 ? 'var(--m-red)' : 'inherit' }}">{{ $rp($summary['netCash']) }}</p>
+            <p class="m-health__value m-money" style="color: {{ $summary['netCash'] < 0 ? 'var(--m-red)' : 'inherit' }}">{{ $rp($summary['netCash']) }}</p>
             <p class="m-health__meta">filament dicetak {{ $gram($summary['filamentProduced']) }} g &middot; terjual {{ $gram($summary['filamentSold']) }} g</p>
         </article>
     </div>
 
-    <div class="m-layout">
+    <div class="m-layout m-layout--store">
         <div class="m-card">
             <h2 class="m-card__title" style="margin-bottom: 14px">Transaksi</h2>
             <div class="m-table-wrap">
@@ -76,7 +80,7 @@
             <div class="m-pagination">{{ $sales->links('pagination::simple-bootstrap-5') }}</div>
         </div>
 
-        <div style="display: grid; gap: 20px">
+        <div class="m-side">
             <section class="m-card">
                 <div class="m-card__head">
                     <h2 class="m-card__title">Perlu diproduksi</h2>

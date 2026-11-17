@@ -52,7 +52,7 @@ class StoreItemBatchRequest extends FormRequest
             'letter_filament_lot_id' => [$isBase || ! $this->filled('filament_lot_id') ? 'exclude' : 'nullable', 'integer', 'exists:filament_lots,id'],
             'purchase_price' => [$this->filled('filament_lot_id') ? 'nullable' : 'required', 'integer', 'min:0', 'max:100000000'],
             'fixed_cost' => ['required', 'integer', 'min:0', 'max:100000000'],
-            'selling_price' => ['required', 'integer', 'min:0', 'max:100000000'],
+            'selling_price' => [$isBase ? 'nullable' : 'required', 'integer', 'min:0', 'max:100000000'],
             'filament_grams' => ['required', 'numeric', 'min:0', 'max:99999'],
             'purchase_price_step' => ['nullable', 'integer', 'min:0', 'max:100000000'],
             'selling_price_step' => ['nullable', 'integer', 'min:0', 'max:100000000'],
@@ -135,7 +135,8 @@ class StoreItemBatchRequest extends FormRequest
     }
 
     /**
-     * Daftar item yang akan dibuat. Untuk base cap, harga & filament naik per tambahan huruf.
+     * Daftar item yang akan dibuat. Untuk base cap, harga & filament naik per tambahan huruf;
+     * bila harga jual dikosongkan, dipakai tabel harga base cap.
      *
      * @return list<array<string, mixed>>
      */
@@ -178,7 +179,9 @@ class StoreItemBatchRequest extends FormRequest
                     'size' => $size,
                     'name' => StoreItem::defaultName($category, null, $size),
                     'purchase_price' => (int) ($data['purchase_price'] ?? 0) + $extra * (int) ($data['purchase_price_step'] ?? 0),
-                    'selling_price' => (int) $data['selling_price'] + $extra * (int) ($data['selling_price_step'] ?? 0),
+                    'selling_price' => isset($data['selling_price'])
+                        ? (int) $data['selling_price'] + $extra * (int) ($data['selling_price_step'] ?? 0)
+                        : StoreItem::baseCapPrice($size),
                     'filament_grams' => round((float) $data['filament_grams'] + $extra * (float) ($data['filament_grams_step'] ?? 0), 2),
                 ];
             })

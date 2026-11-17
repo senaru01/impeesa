@@ -6,6 +6,7 @@ use App\Enums\StockMovementType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CheckoutRequest;
 use App\Models\FilamentLot;
+use App\Models\FilamentWaste;
 use App\Models\Sale;
 use App\Models\StockMovement;
 use App\Models\StoreItem;
@@ -40,6 +41,7 @@ class SaleController extends Controller
         $goodsPurchases = $productionMovements->sum(fn (StockMovement $movement) => $movement->cashOut());
         $filamentLots = FilamentLot::query()->whereBetween('purchased_on', [$month->toDateString(), $month->endOfMonth()->toDateString()])->latest('purchased_on')->get();
         $filamentPurchases = (int) $filamentLots->sum('price');
+        $wastes = FilamentWaste::query()->whereBetween('created_at', $range);
 
         return view('admin.store.sales.index', [
             'month' => $month,
@@ -54,6 +56,8 @@ class SaleController extends Controller
                 'cashOut' => $filamentPurchases + $goodsPurchases,
                 'filamentProduced' => round($productionMovements->sum(fn (StockMovement $movement) => $movement->totalFilamentGrams()), 2),
                 'netCash' => $revenue - $filamentPurchases - $goodsPurchases,
+                'wastedGrams' => (float) (clone $wastes)->sum('grams'),
+                'wastedValue' => (int) (clone $wastes)->sum('value'),
             ],
             'sales' => (clone $sales)->with('cashier')->withCount('lines')->latest()->latest('id')->paginate(30)->withQueryString(),
             'productionMovements' => $productionMovements->take(20),

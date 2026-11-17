@@ -1,6 +1,7 @@
 @extends('layouts.member')
 
 @section('title', 'Kasir Toko')
+@section('wrap', 'm-wrap--wide')
 
 @php
     $rp = fn (int $value): string => 'Rp '.number_format($value, 0, ',', '.');
@@ -21,7 +22,7 @@
 
     @include('admin.store.nav')
 
-    <div class="m-layout">
+    <div class="m-layout m-layout--store">
         <div style="display: grid; gap: 20px">
             {{-- ============ RAKIT GANTUNGAN KUNCI ============ --}}
             <form method="POST" action="{{ route('admin.store.cart.keychain') }}" class="m-card m-form" data-keychain-form data-catalog='@json($catalog)'>
@@ -84,7 +85,7 @@
                         <select id="accessory_item_id" name="accessory_item_id" class="m-input">
                             <option value="">Tanpa aksesoris</option>
                             @foreach ($accessories as $accessory)
-                                <option value="{{ $accessory->id }}" data-color="{{ $accessory->color }}" @selected((int) old('accessory_item_id') === $accessory->id)>{{ $accessory->label() }} ({{ $rp($accessory->selling_price) }})</option>
+                                <option value="{{ $accessory->id }}" data-color="{{ $accessory->color }}" @selected(old('accessory_item_id') !== null ? (int) old('accessory_item_id') === $accessory->id : $accessory->id === $defaultAccessoryId)>{{ $accessory->label() }} ({{ $accessory->selling_price > 0 ? $rp($accessory->selling_price) : 'gratis' }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -130,7 +131,7 @@
         </div>
 
         {{-- ============ KERANJANG & CHECKOUT ============ --}}
-        <div class="m-sticky" style="display: grid; gap: 20px">
+        <div class="m-sticky m-side">
             <section class="m-card">
                 <div class="m-card__head">
                     <h2 class="m-card__title">Keranjang</h2>

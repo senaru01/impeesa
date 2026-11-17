@@ -30,7 +30,7 @@
         <div class="m-field">
             <label for="remaining_grams">Sisa (gram)</label>
             <input id="remaining_grams" name="remaining_grams" type="number" min="0" step="any" class="m-input" value="{{ old('remaining_grams', $lot->remaining_grams) }}" required>
-            <span class="m-field__hint">Koreksi bila ditimbang ulang (gagal cetak, sisa purge).</span>
+            <span class="m-field__hint">Koreksi bila ditimbang ulang. Untuk sisa dibuang atau cetakan gagal, pakai "Buang sisa / NG" supaya tercatat sebagai kerugian.</span>
         </div>
     @else
         <div class="m-field">

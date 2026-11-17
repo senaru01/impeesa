@@ -9,13 +9,16 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700" rel="stylesheet">
     @stack('head')
+    @if (request()->routeIs('admin.store.*'))
+        @include('admin.store.pwa-head')
+    @endif
     <link rel="stylesheet" href="{{ asset('css/member.css') }}?v={{ filemtime(public_path('css/member.css')) }}">
 </head>
-<body class="member">
+<body @class(['member', 'is-store' => request()->routeIs('admin.store.*')])>
     @php($authUser = auth()->user())
 
     <header class="m-header">
-        <div class="m-wrap">
+        <div class="m-wrap @yield('wrap')">
             <div class="m-header__top">
                 <a href="{{ route('landing') }}" class="m-brand"><span class="m-brand__dot"></span>Impeesa</a>
 
@@ -58,7 +61,7 @@
     </header>
 
     <main class="m-main">
-        <div class="m-wrap">
+        <div class="m-wrap @yield('wrap')">
             @if (session('status'))
                 <p class="m-flash" role="status">{{ session('status') }}</p>
             @endif

@@ -467,14 +467,15 @@
 
                 const name = document.createElement('span');
                 name.className = 'k3d-picker__name';
-                name.textContent = option.value ? option.text.replace(/\s*\(Rp[^)]*\)\s*$/, '') : 'Tanpa rantai';
+                name.textContent = option.value ? option.text.replace(/\s*\((Rp[^)]*|gratis)\)\s*$/, '') : 'Tanpa rantai';
                 const meta = document.createElement('small');
-                meta.textContent = entry ? (entry.stock > 0 ? `${rupiah(entry.price)} · stok ${entry.stock}` : 'habis') : 'rantai silver bawaan';
+                meta.textContent = entry ? (entry.stock > 0 ? `${entry.price > 0 ? rupiah(entry.price) : 'gratis'} · stok ${entry.stock}` : 'habis') : 'rantai silver bawaan';
                 name.append(meta);
 
                 button.append(chip, name);
                 button.addEventListener('click', () => {
                     accessory.value = option.value;
+                    accessoryChosen = true;
                     closePicker();
                     update();
                 });
@@ -574,7 +575,7 @@
             });
 
             const unitTotal = lines.reduce((sum, [, amount]) => sum + amount, 0);
-            const nodes = lines.map(([label, amount]) => row(label, rupiah(amount), true));
+            const nodes = lines.map(([label, amount]) => row(label, amount === 0 ? 'gratis' : rupiah(amount), true));
 
             if (count > 1) {
                 nodes.push(row('Harga per gantungan', rupiah(unitTotal)));
@@ -614,6 +615,23 @@
                 select.value = '';
             });
             closePicker();
+        });
+        // Rantai ikut warna base sampai kasir memilih rantai sendiri.
+        let accessoryChosen = false;
+        accessory?.addEventListener('change', () => {
+            accessoryChosen = true;
+        });
+        baseColor?.addEventListener('change', () => {
+            if (!accessory || accessoryChosen) {
+                return;
+            }
+
+            const match = [...accessory.options].find((option) => option.value && option.dataset.color === baseColor.value
+                && /^rantai/i.test(option.text) && (catalog.items?.[option.value]?.stock ?? 0) > 0);
+
+            if (match) {
+                accessory.value = match.value;
+            }
         });
         [quantity, keycapColor, baseColor, switchItem, accessory].forEach((input) => input?.addEventListener('change', update));
         quantity.addEventListener('input', update);
