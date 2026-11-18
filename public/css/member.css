@@ -740,6 +740,12 @@ body.ed { background: #fef2f2; font-family: system-ui, -apple-system, 'Segoe UI'
 .m-subnav__install { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 8px 16px; border-radius: 999px; border: 1px dashed var(--m-navy); background: transparent; color: var(--m-navy); font-size: 13px; font-weight: 700; }
 .m-subnav__install:hover { background: var(--m-surface); }
 .m-subnav__install[hidden] { display: none; }
+.m-pwa-guide { max-width: min(360px, calc(100vw - 32px)); padding: 20px; border: 0; border-radius: var(--m-radius); background: var(--m-surface); color: var(--m-text); box-shadow: var(--m-shadow); font-family: var(--m-font); }
+.m-pwa-guide::backdrop { background: rgba(15, 23, 42, .45); }
+.m-pwa-guide h3 { margin: 0 0 12px; font-size: 17px; color: var(--m-navy); }
+.m-pwa-guide ol { margin: 0 0 16px; padding-left: 20px; display: grid; gap: 8px; font-size: 14px; line-height: 1.5; }
+.m-pwa-guide svg { vertical-align: -3px; color: var(--m-blue); }
+.m-pwa-guide button { width: 100%; padding: 10px 16px; border: 0; border-radius: 999px; background: var(--m-navy); color: #fff; font-weight: 700; font-size: 14px; }
 
 /* Saat dibuka sebagai aplikasi terpasang: hanya menu toko, seperti aplikasi kasir terpisah */
 @media (display-mode: standalone), (display-mode: fullscreen) {
